@@ -1,0 +1,4 @@
+/home/denis/ComputerGraphicsLabs/lab_05/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/home/denis/ComputerGraphicsLabs/lab_05/cmake-build-debug/CMakeFiles/lab_05_debug.dir
+/home/denis/ComputerGraphicsLabs/lab_05/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/denis/ComputerGraphicsLabs/lab_05/cmake-build-debug/CMakeFiles/lab_05.dir
