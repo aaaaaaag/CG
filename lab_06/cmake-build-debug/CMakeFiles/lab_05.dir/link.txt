@@ -1,0 +1,2 @@
+/bin/ar qc liblab_05.a  CMakeFiles/lab_05.dir/src/MyMainWindow.cpp.o CMakeFiles/lab_05.dir/src/CanvasPolygon.cpp.o
+/bin/ranlib liblab_05.a
