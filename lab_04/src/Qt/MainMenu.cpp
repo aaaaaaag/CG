@@ -52,16 +52,15 @@ MainMenu::MainMenu() {
     auto buttonDrawEllipseSpectre = new QPushButton;
     buttonDrawEllipseSpectre->setText("Draw ellipse spectre");
     auto buttonDrawTimeCmp = new QPushButton;
-    buttonDrawTimeCmp->setText("Time cmp");
+    buttonDrawTimeCmp->setText("Time cmp circle");
     auto buttonGraphic = new QPushButton;
-    buttonGraphic->setText("Stairs develop");
+    buttonGraphic->setText("Time cmp ellipse");
 
 
     auto graphicWidget = new GraphicWidget;
-    auto timeGraph = new TimeManager(spectreLayout);
-    timeGraph->ConnectButton(buttonDrawTimeCmp);
     auto stairsGraphic = new StairsGraphic;
-    stairsGraphic->ConnectButton(buttonGraphic);
+    stairsGraphic->ConnectButtonCircle(buttonDrawTimeCmp);
+    stairsGraphic->ConnectButtonCircle(buttonGraphic);
 
     graphicWidget->connectButtonToClearCanvas(buttonClearCanvas);
 
@@ -89,6 +88,7 @@ MainMenu::MainMenu() {
 
     menu->addWidget(buttonClearCanvas);
     menu->addWidget(buttonDrawTimeCmp);
+    menu->addWidget(buttonGraphic);
     mainWindow->addLayout(menu);
     mainWindow->addWidget(graphicWidget);
     this->setLayout(mainWindow);

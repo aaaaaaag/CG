@@ -16,13 +16,19 @@ public:
 
     StairsGraphic();
 
-    void ConnectButton(QPushButton* button) const;
+    void ConnectButtonCircle(QPushButton* button) const;
+
+    void ConnectButtonEllipse(QPushButton* button) const;
 
 private slots:
 
     void CreateGraphic();
 
+    void CreateGraphicEllipse();
+
 private:
+
+    static QLineSeries* CreateChangeLineEllipse(DrawType type);
 
     static QLineSeries* CreateChangeLine(DrawType type);
 };

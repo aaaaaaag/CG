@@ -12,6 +12,7 @@ GraphicWidget::GraphicWidget() {
     this->setScene(mScene);
     this->setMaximumSize(600, 600);
     this->setMinimumSize(600, 600);
+    mScene->setSceneRect(0, 0, 600, 600);
 }
 
 void GraphicWidget::connectButtonToClearCanvas(QPushButton* button) const {
@@ -181,8 +182,8 @@ void GraphicWidget::drawEllipseSpectre() {
     for (int i = 0; i < ellipseNumb; i++)
     {
         DrawLine::drawEllipse(m_pDrawTypeGetter->GetSelectedMode(), m_pDrawColorGetter->GetDrawColor(), center, xAxis, yAxis, mScene);
-        xAxis += axisStep;
-        yAxis += axisStep;
+        xAxis *= axisStep;
+        yAxis *= axisStep;
     }
 }
 
