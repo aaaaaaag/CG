@@ -228,22 +228,57 @@ void CanvasPolygon::Fill() {
     m_vStack.emplace_back(currentMouseClick.x(), currentMouseClick.y());
     while(!m_vStack.empty())
     {
-        if (m_pUi->comboBoxDelay_9->currentIndex() == 0 && m_vStack.size() % 128 == 0) {
+        std::vector<dot_t> vLine;
+        if (m_pUi->comboBoxDelay_9->currentIndex() == 0) {
             QApplication::processEvents(QEventLoop::AllEvents);
         }
-        auto pix = m_vStack.back();
-        m_vStack.pop_back();
+        auto pix = m_vStack.front();
+        m_vStack.erase(m_vStack.begin());
+        vLine.push_back(pix);
 
-        drawPixel(dot_t(pix.first, pix.second), m_pScene, *m_pPen);
-        m_vPixColorMap[pix.first][pix.second] = fillColor;
-        if (m_vPixColorMap[pix.first - 1][pix.second] != fillColor)
-            m_vStack.emplace_back(pix.first - 1, pix.second);
-        if (m_vPixColorMap[pix.first][pix.second + 1] != fillColor)
-            m_vStack.emplace_back(pix.first, pix.second + 1);
-        if (m_vPixColorMap[pix.first + 1][pix.second] != fillColor)
-            m_vStack.emplace_back(pix.first + 1, pix.second);
-        if (m_vPixColorMap[pix.first][pix.second - 1] != fillColor)
-            m_vStack.emplace_back(pix.first, pix.second - 1);
+        auto x = pix.first;
+        auto y = pix.second;
+        while (m_vPixColorMap[x][y] != fillColor)
+        {
+            m_vPixColorMap[x][y] = fillColor;
+            drawPixel(dot_t(x, y), m_pScene, *m_pPen);
+            vLine.emplace_back(x, y);
+            x++;
+        }
+        x = pix.first - 1;
+        while (m_vPixColorMap[x][y] != fillColor)
+        {
+            m_vPixColorMap[x][y] = fillColor;
+            drawPixel(dot_t(x, y), m_pScene, *m_pPen);
+            vLine.insert(vLine.begin(), dot_t(x, y));
+            x--;
+        }
+
+        for (auto dot: vLine)
+        {
+            if (m_vPixColorMap[dot.first][dot.second + 1] != fillColor) {
+                m_vStack.emplace_back(dot.first, dot.second + 1);
+                break;
+            }
+        }
+        for (auto dot: vLine)
+        {
+            if (m_vPixColorMap[dot.first][dot.second - 1] != fillColor) {
+                m_vStack.emplace_back(dot.first, dot.second - 1);
+                break;
+            }
+        }
+
+//        drawPixel(dot_t(pix.first, pix.second), m_pScene, *m_pPen);
+//        m_vPixColorMap[pix.first][pix.second] = fillColor;
+//        if (m_vPixColorMap[pix.first - 1][pix.second] != fillColor)
+//            m_vStack.emplace_back(pix.first - 1, pix.second);
+//        if (m_vPixColorMap[pix.first][pix.second + 1] != fillColor)
+//            m_vStack.emplace_back(pix.first, pix.second + 1);
+//        if (m_vPixColorMap[pix.first + 1][pix.second] != fillColor)
+//            m_vStack.emplace_back(pix.first + 1, pix.second);
+//        if (m_vPixColorMap[pix.first][pix.second - 1] != fillColor)
+//            m_vStack.emplace_back(pix.first, pix.second - 1);
 
     }
     m_vLines.clear();

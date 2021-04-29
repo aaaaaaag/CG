@@ -190,58 +190,50 @@ void CanvasPolygon::DrawLineDDA(dot_t from, dot_t to) {
         if (prevX == static_cast<int>(x) - 1 && prevY == static_cast<int>(y) - 1)
             stairsNumb++;
     }
-    if (resLine.back() != to)
+    if (resLine.back() != to) {
+        //resLine.push_back(to);
         resLine.back() = to;
-    if (resLine.front() != from)
+        m_vPixColorMap[to.first][to.second] = m_pPen->color();
+    }
+    if (resLine.front() != from) {
         resLine.front() = from;
+        //resLine.insert(resLine.begin(), from);
+        m_vPixColorMap[from.first][from.second] = m_pPen->color();
+    }
     m_vLines.push_back(resLine);
 }
 
-
-QColor GetNegColor(const QColor& color)
-{
-    return QColor(255 - color.red(), 255 - color.green(), 255 - color.blue());
-}
-
-
-
 void CanvasPolygon::Fill() {
-//    for (const auto& line: m_vPixColorMap)
-//    {
-//        for (const auto& d: line)
-//        {
-//            if (d == QColor(255, 255, 255))
-//                std::cout << "0 ";
-//            else
-//                std::cout << "1 ";
-//        }
-//        std::cout << std::endl;
-//    }
     centerX = minX + (maxX - minX) / 2;
 
-    //std::cout << (QColor(255, 255, 255) == QColor(255, 255, 255)) << std::endl;
     m_vPixColorMapOld = m_vPixColorMap;
     auto fillColor = getColorByType(m_pUi->comboBoxColor_9->currentText().toStdString());
     m_pPen->setColor(fillColor);
-    //m_pScene->addLine(centerX, 0, centerX, 600, *m_pPen);
-    for (const auto& line: m_vLines)
+    for (int j = 0; j < m_vLines.size(); j++)
     {
         bool direction;
-        if (line.front().first > line.back().first)
+        if (m_vLines[j].front().first > m_vLines[j].back().first)
             direction = false;
         else
             direction = true;
 
-        for (int i = 1; i < line.size(); i++)
+        for (int i = 0; i < m_vLines[j].size(); i++)
         {
-            //std::this_thread::sleep_for(std::chrono::seconds(3));
-            //std::this_thread::sleep_for(std::chrono::milliseconds(10));
-            auto dot = line[i];
+            auto ind = j + 1;
+            if (ind == m_vLines.size() && i == m_vLines[j].size() - 1) {
+                std::cout << "bam" << std::endl;
+                ind = 0;
+            }
+            if (i == m_vLines[j].size() - 1 && m_vLines[j].front().second <= m_vLines[j].back().second && m_vLines[j].back().second <= m_vLines[ind].back().second)
+                continue;
+            if (i == m_vLines[j].size() - 1 && m_vLines[j].front().second >= m_vLines[j].back().second && m_vLines[j].back().second >= m_vLines[ind].back().second)
+                continue;
+            auto dot = m_vLines[j][i];
             if (m_pUi->comboBoxDelay_9->currentIndex() == 0)
                 QApplication::processEvents(QEventLoop::AllEvents);
             if (dot.first < centerX)
             {
-                if ((direction && dot.second == line[i + 1].second) || (!direction && dot.second == line[i - 1].second))
+                if ((i != m_vLines[j].size() - 1 && direction && dot.second == m_vLines[j][i + 1].second) || (!direction && dot.second == m_vLines[j][i - 1].second))
                     continue;
                 for (int x = dot.first; x < centerX; x++)
                 {
@@ -261,7 +253,7 @@ void CanvasPolygon::Fill() {
             }
             else if (dot.first > centerX)
             {
-                if ((!direction && dot.second == line[i + 1].second) || (direction && dot.second == line[i - 1].second))
+                if ((!direction && dot.second == m_vLines[j][i + 1].second) || (direction && dot.second == m_vLines[j][i - 1].second))
                     continue;
                 for (int x = dot.first; x >= centerX; x--)
                 {
@@ -280,6 +272,7 @@ void CanvasPolygon::Fill() {
                 }
             }
         }
+        //getchar();
     }
     m_vLines.clear();
     m_vPolygonDots.clear();
