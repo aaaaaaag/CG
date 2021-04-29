@@ -221,7 +221,7 @@ void CanvasPolygon::Fill() {
         {
             auto ind = j + 1;
             if (ind == m_vLines.size() && i == m_vLines[j].size() - 1) {
-                std::cout << "bam" << std::endl;
+                //std::cout << "bam" << std::endl;
                 ind = 0;
             }
             if (i == m_vLines[j].size() - 1 && m_vLines[j].front().second <= m_vLines[j].back().second && m_vLines[j].back().second <= m_vLines[ind].back().second)
@@ -233,8 +233,29 @@ void CanvasPolygon::Fill() {
                 QApplication::processEvents(QEventLoop::AllEvents);
             if (dot.first < centerX)
             {
+
+
+                if (i != m_vLines[j].size() - 1 && !direction && dot.second == m_vLines[j][i + 1].second)
+                {
+                    auto ic = i;
+                    while (m_vLines[j][ic].second == m_vLines[j][ic + 1].second)
+                        ic++;
+                    if (ind == m_vLines.size() && ic == m_vLines[j].size() - 1) {
+                        //std::cout << "bam" << std::endl;
+                        ind = 0;
+                    }
+                    if (ic == m_vLines[j].size() - 1 && m_vLines[j].front().second <= m_vLines[j].back().second && m_vLines[j].back().second <= m_vLines[ind].back().second)
+                        continue;
+                    if (ic == m_vLines[j].size() - 1 && m_vLines[j].front().second >= m_vLines[j].back().second && m_vLines[j].back().second >= m_vLines[ind].back().second)
+                        continue;
+                }
+
+
+
                 if ((i != m_vLines[j].size() - 1 && direction && dot.second == m_vLines[j][i + 1].second) || (!direction && dot.second == m_vLines[j][i - 1].second))
                     continue;
+
+
                 for (int x = dot.first; x < centerX; x++)
                 {
                     if (m_vPixColorMap[x][dot.second] != fillColor)
@@ -253,6 +274,21 @@ void CanvasPolygon::Fill() {
             }
             else if (dot.first > centerX)
             {
+                if (i != m_vLines[j].size() - 1 && direction && dot.second == m_vLines[j][i + 1].second)
+                {
+                    auto ic = i;
+                    while (m_vLines[j][ic].second == m_vLines[j][ic + 1].second)
+                        ic++;
+                    if (ind == m_vLines.size() && ic == m_vLines[j].size() - 1) {
+                        //std::cout << "bam" << std::endl;
+                        ind = 0;
+                    }
+                    if (ic == m_vLines[j].size() - 1 && m_vLines[j].front().second <= m_vLines[j].back().second && m_vLines[j].back().second <= m_vLines[ind].back().second)
+                        continue;
+                    if (ic == m_vLines[j].size() - 1 && m_vLines[j].front().second >= m_vLines[j].back().second && m_vLines[j].back().second >= m_vLines[ind].back().second)
+                        continue;
+                }
+
                 if ((!direction && dot.second == m_vLines[j][i + 1].second) || (direction && dot.second == m_vLines[j][i - 1].second))
                     continue;
                 for (int x = dot.first; x >= centerX; x--)
