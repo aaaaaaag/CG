@@ -1,0 +1,1 @@
+/bin/g++    -std=c++1y -g   CMakeFiles/lab_08_debug.dir/main.cpp.o  -o lab_08_debug  liblab_08.a /usr/lib/x86_64-linux-gnu/libQt5Charts.so.5.11.3 /usr/lib/x86_64-linux-gnu/libQt5Widgets.so.5.11.3 /usr/lib/x86_64-linux-gnu/libQt5Gui.so.5.11.3 /usr/lib/x86_64-linux-gnu/libQt5Core.so.5.11.3 

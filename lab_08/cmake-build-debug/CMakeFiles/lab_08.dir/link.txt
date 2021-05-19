@@ -1,0 +1,2 @@
+/bin/ar qc liblab_08.a  CMakeFiles/lab_08.dir/src/MyMainWindow.cpp.o CMakeFiles/lab_08.dir/src/CanvasPolygon.cpp.o CMakeFiles/lab_08.dir/src/Vector.cpp.o
+/bin/ranlib liblab_08.a
