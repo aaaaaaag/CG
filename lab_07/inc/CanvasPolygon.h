@@ -8,10 +8,9 @@
 #include "QGraphicsSceneMouseEvent"
 #include "QGraphicsView"
 #include "MainWindowUI.h"
-
+#include "Rectangle.h"
 typedef std::pair<int, int> dot_t;
 typedef std::vector<dot_t> line_t;
-typedef std::vector<std::vector<QColor>> myPixMap_t;
 
 class CanvasPolygon: public QGraphicsView {
 
@@ -41,11 +40,12 @@ public slots:
 
     void myMousePressEvent(QMouseEvent *event);
 
+    line_t cut(dot_t p1, dot_t p2);
+
 private:
     bool isCtrl;
     bool isAddLine;
     bool isUpdateRectangle;
-
 
     Ui::MainWindow* m_pUi;
     QPointF currentMouseClick;
@@ -58,6 +58,8 @@ private:
     dot_t rectangleStartDot;
     double rectangleWidth;
     double rectangleHeight;
+
+
 
 
     void ResizeCanvas(int w, int h);

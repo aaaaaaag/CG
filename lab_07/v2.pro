@@ -21,8 +21,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 # Input
-HEADERS += inc/MainWindowUI.h inc/MyMainWindow.h inc/CanvasPolygon.h
-SOURCES += src/MyMainWindow.cpp src/CanvasPolygon.cpp main.cpp
+HEADERS += inc/MainWindowUI.h inc/MyMainWindow.h inc/CanvasPolygon.h inc/Rectangle.h
+SOURCES += src/MyMainWindow.cpp src/CanvasPolygon.cpp main.cpp src/Rectangle.cpp
 
 
 QT += core gui

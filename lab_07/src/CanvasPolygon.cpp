@@ -20,8 +20,16 @@ void CanvasPolygon::myMousePressEvent(QMouseEvent *event) {
         currentLine.emplace_back(currentMouseClick.x(), currentMouseClick.y());
         if (currentLine.size() == 2) {
             DrawLine();
-            currentLine.clear();
             isAddLine = false;
+            auto cutLine = cut(currentLine.front(), currentLine.back());
+
+            currentLine.clear();
+            if (!cutLine.empty())
+            {
+                m_pPen->setColor(QColor(0, 0, 255));
+                m_pScene->addLine(cutLine.front().first, cutLine.front().second,
+                                  cutLine.back().first, cutLine.back().second, *m_pPen);
+            }
         }
     }
     else if (isUpdateRectangle)
@@ -37,8 +45,16 @@ void CanvasPolygon::myMousePressEvent(QMouseEvent *event) {
             rectangleHeight = currentMouseClick.y() - rectangleStartDot.second;
             rectangleWidth = currentMouseClick.x() - rectangleStartDot.first;
             drawRectangle();
-            for (auto line: m_vLines)
+            for (auto line: m_vLines) {
                 DrawLineDDA(line.front(), line.back());
+                auto cutLine = cut(line.front(), line.back());
+                if (!cutLine.empty())
+                {
+                    m_pPen->setColor(QColor(0, 0, 255));
+                    m_pScene->addLine(cutLine.front().first, cutLine.front().second,
+                                      cutLine.back().first, cutLine.back().second, *m_pPen);
+                }
+            }
             isUpdateRectangle = false;
         }
     }
@@ -85,6 +101,7 @@ void CanvasPolygon::DrawLine() {
                 resLine.emplace_back(dot_t(currentLine.front().first, currentLine.back().second));
             }
             m_vLines.push_back(resLine);
+            currentLine = resLine;
         }
     }
 }
@@ -117,35 +134,35 @@ void CanvasPolygon::DrawLineDDA(dot_t from, dot_t to) {
     double x1 = from.first, x2 = to.first, y1 = from.second, y2 = to.second, length;
 
     m_pPen->setColor(QColor(0, 255, 0));
-
-    auto dx = x2 - x1;
-    auto dy = y2 - y1;
-
-    if (abs(dx) - abs(dy) >= 0) length = abs(dx);
-    else length = abs(dy);
-
-    dx /= length; dy /= length;
-    auto x = x1, y = y1;
-
-    bool isInside = false;
-
-    for (int i = 0; i < length + 1; i++)
-    {
-        if (y > rectangleStartDot.second && y < rectangleStartDot.second + rectangleHeight &&
-        x > rectangleStartDot.first && x < rectangleStartDot.first + rectangleWidth && !isInside)
-        {
-            isInside = true;
-            m_pPen->setColor(QColor(0, 0, 255));
-        }
-        if ((y <= rectangleStartDot.second || y >= rectangleStartDot.second + rectangleHeight ||
-            x <= rectangleStartDot.first || x >= rectangleStartDot.first + rectangleWidth) && isInside)
-        {
-            isInside = false;
-            m_pPen->setColor(QColor(0, 255, 0));
-        }
-        drawPixel(dot_t(x, y), m_pScene, *m_pPen);
-        x += dx; y += dy;
-    }
+    m_pScene->addLine(x1, y1, x2, y2, *m_pPen);
+//    auto dx = x2 - x1;
+//    auto dy = y2 - y1;
+//
+//    if (abs(dx) - abs(dy) >= 0) length = abs(dx);
+//    else length = abs(dy);
+//
+//    dx /= length; dy /= length;
+//    auto x = x1, y = y1;
+//
+//    bool isInside = false;
+//
+//    for (int i = 0; i < length + 1; i++)
+//    {
+//        if (y > rectangleStartDot.second && y < rectangleStartDot.second + rectangleHeight &&
+//        x > rectangleStartDot.first && x < rectangleStartDot.first + rectangleWidth && !isInside)
+//        {
+//            isInside = true;
+//            m_pPen->setColor(QColor(0, 0, 255));
+//        }
+//        if ((y <= rectangleStartDot.second || y >= rectangleStartDot.second + rectangleHeight ||
+//            x <= rectangleStartDot.first || x >= rectangleStartDot.first + rectangleWidth) && isInside)
+//        {
+//            isInside = false;
+//            m_pPen->setColor(QColor(0, 255, 0));
+//        }
+//        drawPixel(dot_t(x, y), m_pScene, *m_pPen);
+//        x += dx; y += dy;
+//    }
 }
 
 void CanvasPolygon::pressedAddLineButton() {
@@ -187,4 +204,58 @@ void CanvasPolygon::drawRectangle() {
     QSizeF size(rectangleWidth, rectangleHeight);
     m_pPen->setColor(QColor(255, 0, 0));
     m_pScene->addRect(QRectF(start, size), *m_pPen);
+}
+
+line_t CanvasPolygon::cut(dot_t p1, dot_t p2) {
+    float m = 0;
+    float Im = 0;
+    float dx = p2.first - p1.first;
+    float dy = p2.second - p1.second;
+    bool isVert = ((p2.first - p1.first) == 0);
+    bool isHor = ((p2.second - p1.second) == 0);
+    if (!isVert)
+        m = dy / dx;
+
+    if (!isHor)
+        Im = dx / dy;
+
+    Rectangle rectangle(rectangleStartDot, rectangleWidth, rectangleHeight);
+
+    unsigned int mask = 0b1000u; // для обращения к i-ому разряду кода вершины
+    for (int i = 0; i < 4; i++)
+    {
+        unsigned int t0 = rectangle.getCode(p1);
+        unsigned int t1 = rectangle.getCode(p2);
+
+        if (Rectangle::isLineVisible(t0, t1))
+            return line_t{p1, p2};
+        if (Rectangle::isTrivialInvisible(t0, t1))
+            return line_t();
+
+        bool t0i = ((t0 & mask) != 0);
+        bool t1i = ((t1 & mask) != 0);
+
+        // если t0i или t1i равен единице.
+        if (t0i != t1i)
+        {
+            if (!t0i) // Если точка P1 по видимую сторону, поменять местами вершины
+                std::swap(p1, p2);
+
+            if (!isVert && i < 2)
+            {
+                p1.second = m * (rectangle.getCoord(i) - p1.first) + p1.second;
+                p1.first = rectangle.getCoord(i);
+            }
+            else
+            {
+                if (!isHor)
+                {
+                    p1.first = Im * (rectangle.getCoord(i) - p1.second) + p1.first;
+                    p1.second = rectangle.getCoord(i);
+                }
+            }
+        }
+        mask /= 2;
+    }
+    return line_t {p1, p2};
 }

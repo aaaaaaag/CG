@@ -3,7 +3,7 @@ project(lab_07)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_library(${PROJECT_NAME} inc/MainWindowUI.h src/MyMainWindow.cpp inc/MyMainWindow.h src/CanvasPolygon.cpp inc/CanvasPolygon.h)
+add_library(${PROJECT_NAME} inc/MainWindowUI.h src/MyMainWindow.cpp inc/MyMainWindow.h src/CanvasPolygon.cpp inc/CanvasPolygon.h src/Rectangle.cpp inc/Rectangle.h)
 
 #target_include_directories(${PROJECT_NAME} PRIVATE inc)
 
