@@ -81,8 +81,10 @@ void CanvasPolygon::DrawLine(dot_t A, dot_t B) {
                 vPolygonDots.emplace_back(A.first, B.second);
             resLine.emplace_back(dot_t(A.first, B.second));
         }
-        if (isAddLine)
+        if (isAddLine) {
+            currentLine = resLine;
             m_vLines.push_back(resLine);
+        }
     }
     
 }
@@ -118,20 +120,23 @@ void CanvasPolygon::DrawLineDDA(dot_t from, dot_t to) {
         m_pPen->setColor(QColor(0, 255, 0));
     else if (isUpdateShape)
         m_pPen->setColor(QColor(255, 0, 0));
-    auto dx = x2 - x1;
-    auto dy = y2 - y1;
 
-    if (abs(dx) - abs(dy) >= 0) length = abs(dx);
-    else length = abs(dy);
+    m_pScene->addLine(from.first, from.second, to.first, to.second, *m_pPen);
 
-    dx /= length; dy /= length;
-    auto x = x1, y = y1;
-
-    for (int i = 0; i < length + 1; i++)
-    {
-        drawPixel(dot_t(x, y), m_pScene, *m_pPen);
-        x += dx; y += dy;
-    }
+//    auto dx = x2 - x1;
+//    auto dy = y2 - y1;
+//
+//    if (abs(dx) - abs(dy) >= 0) length = abs(dx);
+//    else length = abs(dy);
+//
+//    dx /= length; dy /= length;
+//    auto x = x1, y = y1;
+//
+//    for (int i = 0; i < length + 1; i++)
+//    {
+//        drawPixel(dot_t(x, y), m_pScene, *m_pPen);
+//        x += dx; y += dy;
+//    }
 }
 
 void CanvasPolygon::pressedAddLineButton() {
