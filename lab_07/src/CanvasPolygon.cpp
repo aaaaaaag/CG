@@ -42,8 +42,12 @@ void CanvasPolygon::myMousePressEvent(QMouseEvent *event) {
         }
         else
         {
-            rectangleHeight = currentMouseClick.y() - rectangleStartDot.second;
-            rectangleWidth = currentMouseClick.x() - rectangleStartDot.first;
+            rectangleHeight = abs(currentMouseClick.y() - rectangleStartDot.second);
+            rectangleWidth = abs(currentMouseClick.x() - rectangleStartDot.first);
+            if (rectangleStartDot.first > currentMouseClick.x())
+                rectangleStartDot.first -= rectangleWidth;
+            if (rectangleStartDot.second > currentMouseClick.y())
+                rectangleStartDot.second -= rectangleHeight;
             drawRectangle();
             for (auto line: m_vLines) {
                 DrawLineDDA(line.front(), line.back());
